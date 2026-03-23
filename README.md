@@ -1,6 +1,6 @@
 # henge (変化)
 
-**CyberChef for Terminal** — A universal CLI tool for data transformation.
+A universal CLI data transformation tool, inspired by [CyberChef](https://gchq.github.io/CyberChef/).
 
 Encode, decode, hash, format, and convert data without leaving the terminal. No more googling `base64` flags or `shasum` syntax.
 
@@ -227,6 +227,36 @@ go test ./...
 
 # Run with verbose output
 go test ./... -v
+```
+
+### Cross-platform build with GoReleaser
+
+[GoReleaser](https://goreleaser.com/) is used to build binaries for multiple platforms.
+
+**Supported platforms:**
+
+| OS | Arch | Target |
+|----|------|--------|
+| macOS | x86_64 | Intel Mac |
+| macOS | arm64 | Apple Silicon |
+| Linux | x86_64 | Intel / AMD |
+| Linux | arm64 | ARM64 |
+| Windows | x86_64 | Intel / AMD |
+
+**Snapshot build (local, without tag):**
+
+```bash
+goreleaser build --snapshot --clean
+```
+
+Binaries are output to `dist/`.
+
+**Release build (requires a Git tag and `GITHUB_TOKEN`):**
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+goreleaser release --clean
 ```
 
 ## Tech Stack
