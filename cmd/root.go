@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	version    = "dev"
+	version    = "1.0.0"
 	outputFile string
 	fromFormat string
 	compact    bool
