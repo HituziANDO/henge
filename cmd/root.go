@@ -18,7 +18,7 @@ var (
 var rootCmd = &cobra.Command{
 	Use:   "henge [file]",
 	Short: "henge - universal data transformation tool",
-	Long: `henge (変化) - CyberChef for Terminal
+	Long: `henge (変化) - A universal CLI data transformation tool, inspired by CyberChef.
 
 A universal CLI tool for data transformation:
   - Encode/Decode: base64, url, hex
