@@ -181,3 +181,145 @@ func TestPipeHashConsistency(t *testing.T) {
 		t.Errorf("hash consistency: %q != %q", out1, out2)
 	}
 }
+
+// --- Image encode/decode tests ---
+
+// Minimal 1x1 pixel PNG
+var testPNGData = []byte{
+	0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d,
+	0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+	0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53, 0xde, 0x00, 0x00, 0x00,
+	0x0c, 0x49, 0x44, 0x41, 0x54, 0x08, 0xd7, 0x63, 0xf8, 0xcf, 0xc0, 0x00,
+	0x00, 0x00, 0x02, 0x00, 0x01, 0xe2, 0x21, 0xbc, 0x33, 0x00, 0x00, 0x00,
+	0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82,
+}
+
+// writeTempPNG creates a temporary PNG file and returns its path.
+func writeTempPNG(t *testing.T) string {
+	t.Helper()
+	dir := t.TempDir()
+	p := filepath.Join(dir, "test.png")
+	if err := os.WriteFile(p, testPNGData, 0644); err != nil {
+		t.Fatalf("failed to write temp PNG: %v", err)
+	}
+	return p
+}
+
+func TestEncodeImage(t *testing.T) {
+	pngFile := writeTempPNG(t)
+
+	stdout, _, err := runHenge(t, "", "encode", "image", pngFile)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	got := strings.TrimSpace(stdout)
+	want := "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVQI12P4z8AAAAACAAHiIbwzAAAAAElFTkSuQmCC"
+	if got != want {
+		t.Errorf("encode image: got %q, want %q", got, want)
+	}
+}
+
+func TestEncodeImageDataURI(t *testing.T) {
+	pngFile := writeTempPNG(t)
+
+	stdout, _, err := runHenge(t, "", "encode", "image", pngFile, "--data-uri")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	got := strings.TrimSpace(stdout)
+	wantPrefix := "data:image/png;base64,"
+	if !strings.HasPrefix(got, wantPrefix) {
+		t.Errorf("encode image --data-uri: output %q does not start with %q", got, wantPrefix)
+	}
+}
+
+func TestEncodeImageWrap(t *testing.T) {
+	pngFile := writeTempPNG(t)
+
+	stdout, _, err := runHenge(t, "", "encode", "image", pngFile, "--wrap", "20")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	got := strings.TrimSpace(stdout)
+	lines := strings.Split(got, "\n")
+	for i, line := range lines {
+		// All lines except the last should be exactly 20 chars
+		if i < len(lines)-1 && len(line) != 20 {
+			t.Errorf("line %d has length %d, want 20: %q", i, len(line), line)
+		}
+	}
+	if len(lines) < 2 {
+		t.Errorf("expected wrapped output to have multiple lines, got %d", len(lines))
+	}
+}
+
+func TestDecodeImage(t *testing.T) {
+	// Prepare base64 of test PNG
+	b64 := "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVQI12P4z8AAAAACAAHiIbwzAAAAAElFTkSuQmCC"
+	dir := t.TempDir()
+	outPath := filepath.Join(dir, "restored.png")
+
+	_, _, err := runHenge(t, "", "decode", "image", b64, "-o", outPath)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	got, err := os.ReadFile(outPath)
+	if err != nil {
+		t.Fatalf("failed to read output file: %v", err)
+	}
+	if !bytes.Equal(got, testPNGData) {
+		t.Errorf("decoded image does not match original PNG data")
+	}
+}
+
+func TestDecodeImageDataURI(t *testing.T) {
+	b64 := "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVQI12P4z8AAAAACAAHiIbwzAAAAAElFTkSuQmCC"
+	dataURI := "data:image/png;base64," + b64
+	dir := t.TempDir()
+	outPath := filepath.Join(dir, "restored.png")
+
+	_, _, err := runHenge(t, "", "decode", "image", dataURI, "-o", outPath)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	got, err := os.ReadFile(outPath)
+	if err != nil {
+		t.Fatalf("failed to read output file: %v", err)
+	}
+	if !bytes.Equal(got, testPNGData) {
+		t.Errorf("decoded data URI image does not match original PNG data")
+	}
+}
+
+func TestEncodeDecodeRoundTrip(t *testing.T) {
+	pngFile := writeTempPNG(t)
+
+	// Step 1: encode image to base64
+	stdout, _, err := runHenge(t, "", "encode", "image", pngFile)
+	if err != nil {
+		t.Fatalf("encode step failed: %v", err)
+	}
+	encoded := strings.TrimSpace(stdout)
+
+	// Step 2: decode base64 back to image
+	dir := t.TempDir()
+	outPath := filepath.Join(dir, "roundtrip.png")
+	_, _, err = runHenge(t, "", "decode", "image", encoded, "-o", outPath)
+	if err != nil {
+		t.Fatalf("decode step failed: %v", err)
+	}
+
+	// Step 3: compare with original
+	got, err := os.ReadFile(outPath)
+	if err != nil {
+		t.Fatalf("failed to read output file: %v", err)
+	}
+	if !bytes.Equal(got, testPNGData) {
+		t.Errorf("round-trip encode/decode: decoded file does not match original")
+	}
+}

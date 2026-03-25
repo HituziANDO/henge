@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/HituziANDO/henge/internal/encoder"
+	hengeimg "github.com/HituziANDO/henge/internal/image"
 	hengeio "github.com/HituziANDO/henge/internal/io"
 	"github.com/spf13/cobra"
 )
@@ -18,11 +19,13 @@ Supported formats:
   base64    Base64 encoding
   url       URL percent-encoding
   hex       Hexadecimal encoding
+  image     Encode image file to base64
 
 Examples:
   echo "hello" | henge encode base64
   echo "hello world" | henge encode url
-  echo "hello" | henge encode hex`,
+  echo "hello" | henge encode hex
+  henge encode image logo.png --data-uri`,
 }
 
 var encodeBase64Cmd = &cobra.Command{
@@ -76,9 +79,41 @@ var encodeHexCmd = &cobra.Command{
 	},
 }
 
+var encodeImageCmd = &cobra.Command{
+	Use:   "image <file>",
+	Short: "Encode image file to base64",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		filePath := args[0]
+		dataURI, _ := cmd.Flags().GetBool("data-uri")
+		wrapWidth, _ := cmd.Flags().GetInt("wrap")
+
+		var result string
+		var err error
+		if dataURI {
+			result, err = hengeimg.EncodeFileToDataURI(filePath)
+		} else {
+			result, err = hengeimg.EncodeFileToBase64(filePath)
+		}
+		if err != nil {
+			return fmt.Errorf("image encode failed: %w", err)
+		}
+
+		if wrapWidth > 0 {
+			result = hengeimg.WrapString(result, wrapWidth)
+		}
+
+		return writeOutput(result)
+	},
+}
+
 func init() {
+	encodeImageCmd.Flags().BoolP("data-uri", "d", false, "output as Data URI scheme")
+	encodeImageCmd.Flags().IntP("wrap", "w", 0, "wrap output at specified width (0=no wrap)")
+
 	encodeCmd.AddCommand(encodeBase64Cmd)
 	encodeCmd.AddCommand(encodeURLCmd)
 	encodeCmd.AddCommand(encodeHexCmd)
+	encodeCmd.AddCommand(encodeImageCmd)
 	rootCmd.AddCommand(encodeCmd)
 }

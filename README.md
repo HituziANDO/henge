@@ -20,6 +20,7 @@ echo "hello" | henge hash sha256        # → 2cf24dba5fb0a30e...
 | SHA256 hash | `shasum -a 256` or `sha256sum`? | `henge hash sha256` |
 | JSON to YAML | Install `yq`, learn its syntax | `henge convert yaml` |
 | "What is this data?" | Try multiple tools manually | `echo "data" \| henge` |
+| Image to Base64 | `base64 < image.png` + manual Data URI | `henge encode image logo.png --data-uri` |
 
 One tool. One syntax. Works with pipes.
 
@@ -70,6 +71,35 @@ echo "hello%20world" | henge decode url   # → hello world
 echo "hello" | henge encode hex           # → 68656c6c6f
 echo "68656c6c6f" | henge decode hex      # → hello
 ```
+
+### Image Base64
+
+Encode image files to Base64 strings and decode them back. Useful for embedding images in HTML/CSS or API payloads.
+
+```bash
+# Image → Base64
+henge encode image logo.png               # → iVBORw0KGgo...
+
+# Image → Data URI (for HTML/CSS embedding)
+henge encode image logo.png --data-uri    # → data:image/png;base64,iVBORw0KGgo...
+
+# Wrap output at 76 characters (for email)
+henge encode image photo.jpg --wrap 76
+
+# Save Base64 to file
+henge encode image logo.png -o encoded.txt
+
+# Base64 → Image
+henge decode image encoded.txt -o restored.png
+
+# Data URI → Image (auto-detected)
+echo "data:image/png;base64,iVBORw..." | henge decode image -o output.png
+
+# Round-trip: encode then decode
+henge encode image logo.png | henge decode image -o copy.png
+```
+
+Supported formats: PNG, JPEG, GIF, WebP, BMP, SVG, ICO
 
 ### Hash
 
@@ -197,10 +227,12 @@ henge auto [input]                    Auto-detect (explicit alias)
 henge encode base64 [input]           Base64 encode
 henge encode url [input]              URL percent-encode
 henge encode hex [input]              Hex encode
+henge encode image <file>             Image to Base64 (--data-uri, --wrap)
 
 henge decode base64 [input]           Base64 decode
 henge decode url [input]              URL percent-decode
 henge decode hex [input]              Hex decode
+henge decode image [input] -o <file>  Base64 to image file
 
 henge hash md5 [input]                MD5 hash
 henge hash sha1 [input]               SHA-1 hash
