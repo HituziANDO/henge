@@ -254,9 +254,8 @@ Binaries are output to `dist/`.
 **Release build (requires a Git tag and `GITHUB_TOKEN`):**
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
-goreleaser release --clean
+git tag v{X.Y.Z}
+git push origin v{X.Y.Z}
 ```
 
 ## Tech Stack
