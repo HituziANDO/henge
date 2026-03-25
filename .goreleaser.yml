@@ -11,7 +11,7 @@ builds:
     binary: henge
     ldflags:
       - -s -w
-      - -X github.com/henge-cli/henge/cmd.version={{.Version}}
+      - -X github.com/HituziANDO/henge/cmd.version={{.Version}}
     env:
       - CGO_ENABLED=0
     goos:

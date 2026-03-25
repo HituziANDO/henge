@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/henge-cli/henge/internal/converter"
-	hengeio "github.com/henge-cli/henge/internal/io"
+	"github.com/HituziANDO/henge/internal/converter"
+	hengeio "github.com/HituziANDO/henge/internal/io"
 	"github.com/spf13/cobra"
 )
 

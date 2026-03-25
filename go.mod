@@ -1,4 +1,4 @@
-module github.com/henge-cli/henge
+module github.com/HituziANDO/henge
 
 go 1.22.2
 

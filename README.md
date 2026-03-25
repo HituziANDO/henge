@@ -28,13 +28,13 @@ One tool. One syntax. Works with pipes.
 ### From source (requires Go 1.22+)
 
 ```bash
-go install github.com/henge-cli/henge@latest
+go install github.com/HituziANDO/henge@latest
 ```
 
 ### Build from repository
 
 ```bash
-git clone https://github.com/henge-cli/henge.git
+git clone https://github.com/HituziANDO/henge.git
 cd henge
 go build -o henge .
 ```

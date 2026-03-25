@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/henge-cli/henge/internal/decoder"
+	"github.com/HituziANDO/henge/internal/decoder"
 	"gopkg.in/yaml.v3"
 )
 

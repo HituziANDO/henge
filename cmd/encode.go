@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/henge-cli/henge/internal/encoder"
-	hengeio "github.com/henge-cli/henge/internal/io"
+	"github.com/HituziANDO/henge/internal/encoder"
+	hengeio "github.com/HituziANDO/henge/internal/io"
 	"github.com/spf13/cobra"
 )
 

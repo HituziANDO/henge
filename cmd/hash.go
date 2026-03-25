@@ -3,8 +3,8 @@ package cmd
 import (
 	"strings"
 
-	"github.com/henge-cli/henge/internal/hasher"
-	hengeio "github.com/henge-cli/henge/internal/io"
+	"github.com/HituziANDO/henge/internal/hasher"
+	hengeio "github.com/HituziANDO/henge/internal/io"
 	"github.com/spf13/cobra"
 )
 

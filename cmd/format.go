@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/henge-cli/henge/internal/formatter"
-	hengeio "github.com/henge-cli/henge/internal/io"
+	"github.com/HituziANDO/henge/internal/formatter"
+	hengeio "github.com/HituziANDO/henge/internal/io"
 	"github.com/spf13/cobra"
 )
 
