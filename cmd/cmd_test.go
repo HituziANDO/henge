@@ -323,3 +323,125 @@ func TestEncodeDecodeRoundTrip(t *testing.T) {
 		t.Errorf("round-trip encode/decode: decoded file does not match original")
 	}
 }
+
+// --- Time conversion tests ---
+
+func TestTimeUnix(t *testing.T) {
+	stdout, _, err := runHenge(t, "", "time", "unix", "2025-01-01T00:00:00Z")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "1735689600" {
+		t.Errorf("time unix: got %q, want %q", got, "1735689600")
+	}
+}
+
+func TestTimeUnixFromStdin(t *testing.T) {
+	stdout, _, err := runHenge(t, "2025-01-01T00:00:00Z", "time", "unix")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "1735689600" {
+		t.Errorf("time unix from stdin: got %q, want %q", got, "1735689600")
+	}
+}
+
+func TestTimeUnixMillis(t *testing.T) {
+	stdout, _, err := runHenge(t, "", "time", "unix", "--millis", "2025-01-01T00:00:00Z")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "1735689600000" {
+		t.Errorf("time unix --millis: got %q, want %q", got, "1735689600000")
+	}
+}
+
+func TestTimeUnixWithTimezone(t *testing.T) {
+	stdout, _, err := runHenge(t, "", "time", "unix", "--timezone", "Asia/Tokyo", "2025-01-01 09:00:00")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "1735689600" {
+		t.Errorf("time unix with timezone: got %q, want %q", got, "1735689600")
+	}
+}
+
+func TestTimeDate(t *testing.T) {
+	stdout, _, err := runHenge(t, "", "time", "date", "1735689600")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "2025-01-01T00:00:00Z" {
+		t.Errorf("time date: got %q, want %q", got, "2025-01-01T00:00:00Z")
+	}
+}
+
+func TestTimeDateFromStdin(t *testing.T) {
+	stdout, _, err := runHenge(t, "1735689600", "time", "date")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "2025-01-01T00:00:00Z" {
+		t.Errorf("time date from stdin: got %q, want %q", got, "2025-01-01T00:00:00Z")
+	}
+}
+
+func TestTimeDateWithTimezone(t *testing.T) {
+	stdout, _, err := runHenge(t, "", "time", "date", "--timezone", "Asia/Tokyo", "1735689600")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "2025-01-01T09:00:00+09:00" {
+		t.Errorf("time date with timezone: got %q, want %q", got, "2025-01-01T09:00:00+09:00")
+	}
+}
+
+func TestTimeDateWithFormat(t *testing.T) {
+	stdout, _, err := runHenge(t, "", "time", "date", "--format", "date", "1735689600")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "2025-01-01" {
+		t.Errorf("time date with format: got %q, want %q", got, "2025-01-01")
+	}
+}
+
+func TestTimeDateMillisAutoDetect(t *testing.T) {
+	stdout, _, err := runHenge(t, "", "time", "date", "1735689600000")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "2025-01-01T00:00:00Z" {
+		t.Errorf("time date millis auto-detect: got %q, want %q", got, "2025-01-01T00:00:00Z")
+	}
+}
+
+func TestTimeRoundTrip(t *testing.T) {
+	// Step 1: convert date string to unix timestamp
+	stdout1, _, err := runHenge(t, "", "time", "unix", "2025-01-01T00:00:00Z")
+	if err != nil {
+		t.Fatalf("unix step failed: %v", err)
+	}
+	unixStr := strings.TrimSpace(stdout1)
+
+	// Step 2: convert unix timestamp back to date string
+	stdout2, _, err := runHenge(t, "", "time", "date", unixStr)
+	if err != nil {
+		t.Fatalf("date step failed: %v", err)
+	}
+	got := strings.TrimSpace(stdout2)
+
+	// Step 3: verify round-trip
+	if got != "2025-01-01T00:00:00Z" {
+		t.Errorf("round-trip time unix/date: got %q, want %q", got, "2025-01-01T00:00:00Z")
+	}
+}

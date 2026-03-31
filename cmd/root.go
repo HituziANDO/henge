@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	version    = "1.1.0"
+	version    = "1.2.0"
 	outputFile string
 	fromFormat string
 	compact    bool
@@ -25,6 +25,7 @@ A universal CLI tool for data transformation:
   - Hash: md5, sha1, sha256, sha512
   - Format: json, yaml, xml
   - Convert: json↔yaml, json↔toml, csv→json
+  - Time: UNIX timestamp ↔ date string conversion
   - Auto-detect: intelligent format detection
 
 Usage:

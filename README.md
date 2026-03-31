@@ -2,7 +2,7 @@
 
 A universal CLI data transformation tool, inspired by [CyberChef](https://gchq.github.io/CyberChef/).
 
-Encode, decode, hash, format, and convert data without leaving the terminal. No more googling `base64` flags or `shasum` syntax.
+Encode, decode, hash, format, convert, and transform timestamps without leaving the terminal. No more googling `base64` flags or `shasum` syntax.
 
 ```bash
 echo "aGVsbG8=" | henge                 # Auto-detect: "looks like Base64" → hello
@@ -21,6 +21,7 @@ echo "hello" | henge hash sha256        # → 2cf24dba5fb0a30e...
 | JSON to YAML | Install `yq`, learn its syntax | `henge convert yaml` |
 | "What is this data?" | Try multiple tools manually | `echo "data" \| henge` |
 | Image to Base64 | `base64 < image.png` + manual Data URI | `henge encode image logo.png --data-uri` |
+| UNIX timestamp | `date -d @1735689600` or `date -r`? OS-dependent | `henge time date 1735689600` |
 
 One tool. One syntax. Works with pipes.
 
@@ -100,6 +101,33 @@ henge encode image logo.png | henge decode image -o copy.png
 ```
 
 Supported formats: PNG, JPEG, GIF, WebP, BMP, SVG, ICO
+
+### Time (UNIX timestamp conversion)
+
+```bash
+# Date → UNIX timestamp
+henge time unix "2025-01-01T00:00:00Z"          # → 1735689600
+echo "2025-01-01" | henge time unix              # → 1735689600
+
+# UNIX timestamp → Date
+henge time date 1735689600                       # → 2025-01-01T00:00:00Z
+echo "1735689600" | henge time date              # → 2025-01-01T00:00:00Z
+
+# Millisecond timestamps (auto-detected)
+henge time date 1735689600000                    # → 2025-01-01T00:00:00Z
+henge time unix --millis "2025-01-01T00:00:00Z"  # → 1735689600000
+
+# Timezone
+henge time date --timezone Asia/Tokyo 1735689600
+# → 2025-01-01T09:00:00+09:00
+
+# Output format (preset or Go layout)
+henge time date --format datetime 1735689600     # → 2025-01-01 00:00:00
+henge time date --format "2006/01/02" 1735689600 # → 2025/01/01
+
+```
+
+Supported input formats: RFC3339, RFC1123, RFC822, `2006-01-02 15:04:05`, `2006-01-02`, `2006/01/02`, `2006/01/02 15:04:05`
 
 ### Hash
 
@@ -246,6 +274,9 @@ henge format xml [input]              Pretty-print XML
 henge convert json [input]            Convert to JSON
 henge convert yaml [input]            Convert to YAML
 henge convert toml [input]            Convert to TOML
+
+henge time unix [input]               Date string to UNIX timestamp
+henge time date [input]               UNIX timestamp to date string
 ```
 
 ## Development
