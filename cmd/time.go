@@ -11,18 +11,36 @@ import (
 )
 
 var timeCmd = &cobra.Command{
-	Use:   "time <subcommand>",
+	Use:   "time [input]",
 	Short: "Convert between UNIX timestamps and date strings",
 	Long: `Convert between UNIX timestamps and date strings.
 
-Supported subcommands:
-  unix    Convert date string to UNIX timestamp
-  date    Convert UNIX timestamp to date string
+When input is given directly, auto-detects the format:
+  - Numeric input  → converts UNIX timestamp to date string (RFC3339)
+  - Date string    → converts to UNIX timestamp
+
+Subcommands (unix, date) are available for explicit control.
 
 Examples:
+  henge time 1735689600                          # → 2025-01-01T00:00:00Z
+  henge time "2025-01-01T00:00:00Z"              # → 1735689600
+  echo "1735689600" | henge time                 # → 2025-01-01T00:00:00Z
   henge time unix "2025-01-01T00:00:00Z"
-  henge time date 1735689600
   henge time date --timezone Asia/Tokyo 1735689600`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		input, err := hengeio.ReadInput(args)
+		if err != nil {
+			return err
+		}
+		input = strings.TrimSpace(input)
+
+		result, err := timconv.AutoConvert(input)
+		if err != nil {
+			return fmt.Errorf("time conversion failed: %w", err)
+		}
+
+		return writeOutput(result)
+	},
 }
 
 var timeUnixCmd = &cobra.Command{

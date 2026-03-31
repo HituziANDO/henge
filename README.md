@@ -105,13 +105,14 @@ Supported formats: PNG, JPEG, GIF, WebP, BMP, SVG, ICO
 ### Time (UNIX timestamp conversion)
 
 ```bash
-# Date → UNIX timestamp
-henge time unix "2025-01-01T00:00:00Z"          # → 1735689600
-echo "2025-01-01" | henge time unix              # → 1735689600
+# Auto-detect: just pass the input directly
+henge time 1735689600                            # → 2025-01-01T00:00:00Z
+henge time "2025-01-01T00:00:00Z"                # → 1735689600
+echo "1735689600" | henge time                   # → 2025-01-01T00:00:00Z
 
-# UNIX timestamp → Date
+# Explicit subcommands for more control
+henge time unix "2025-01-01T00:00:00Z"           # → 1735689600
 henge time date 1735689600                       # → 2025-01-01T00:00:00Z
-echo "1735689600" | henge time date              # → 2025-01-01T00:00:00Z
 
 # Millisecond timestamps (auto-detected)
 henge time date 1735689600000                    # → 2025-01-01T00:00:00Z
@@ -275,6 +276,7 @@ henge convert json [input]            Convert to JSON
 henge convert yaml [input]            Convert to YAML
 henge convert toml [input]            Convert to TOML
 
+henge time [input]                    Auto-detect and convert timestamp/date
 henge time unix [input]               Date string to UNIX timestamp
 henge time date [input]               UNIX timestamp to date string
 ```

@@ -109,6 +109,45 @@ func ParseUnixTimestamp(input string, forceMillis bool) (int64, error) {
 	return v, nil
 }
 
+// IsTimestamp reports whether input looks like a UNIX timestamp (purely numeric,
+// optionally with a leading minus sign).
+func IsTimestamp(input string) bool {
+	s := strings.TrimSpace(input)
+	if s == "" {
+		return false
+	}
+	if s[0] == '-' {
+		s = s[1:]
+	}
+	if s == "" {
+		return false
+	}
+	for _, c := range s {
+		if c < '0' || c > '9' {
+			return false
+		}
+	}
+	return true
+}
+
+// AutoConvert auto-detects the input type and converts it.
+// If the input is a numeric UNIX timestamp, it converts to an RFC3339 date string.
+// If the input is a date string, it converts to a UNIX timestamp.
+func AutoConvert(input string) (string, error) {
+	if IsTimestamp(input) {
+		ts, err := ParseUnixTimestamp(input, false)
+		if err != nil {
+			return "", err
+		}
+		return UnixToDate(ts, "rfc3339", "")
+	}
+	ts, err := DateToUnix(input, "")
+	if err != nil {
+		return "", err
+	}
+	return strconv.FormatInt(ts, 10), nil
+}
+
 // ResolveFormat resolves a preset name to a Go time layout string.
 // If the input doesn't match any preset, it's returned as-is.
 func ResolveFormat(format string) string {

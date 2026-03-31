@@ -293,3 +293,86 @@ func TestResolveFormat(t *testing.T) {
 		})
 	}
 }
+
+func TestIsTimestamp(t *testing.T) {
+	tests := []struct {
+		input string
+		want  bool
+	}{
+		{"1735689600", true},
+		{"1735689600000", true},
+		{"-1", true},
+		{"0", true},
+		{"", false},
+		{"-", false},
+		{"abc", false},
+		{"2025-01-01", false},
+		{"2025-01-01T00:00:00Z", false},
+		{"12.34", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			got := IsTimestamp(tt.input)
+			if got != tt.want {
+				t.Errorf("IsTimestamp(%q) = %v, want %v", tt.input, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestAutoConvert(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    string
+		wantErr string
+	}{
+		{
+			name:  "UNIX timestamp to date",
+			input: "1735689600",
+			want:  "2025-01-01T00:00:00Z",
+		},
+		{
+			name:  "UNIX millis to date",
+			input: "1735689600000",
+			want:  "2025-01-01T00:00:00Z",
+		},
+		{
+			name:  "Date to UNIX timestamp",
+			input: "2025-01-01T00:00:00Z",
+			want:  "1735689600",
+		},
+		{
+			name:  "DateOnly to UNIX timestamp",
+			input: "2025-01-01",
+			want:  "1735689600",
+		},
+		{
+			name:    "Invalid input",
+			input:   "not-a-date-or-number",
+			wantErr: "unable to parse date string",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := AutoConvert(tt.input)
+			if tt.wantErr != "" {
+				if err == nil {
+					t.Fatalf("expected error containing %q, got nil", tt.wantErr)
+				}
+				if !strings.Contains(err.Error(), tt.wantErr) {
+					t.Fatalf("expected error containing %q, got %q", tt.wantErr, err.Error())
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if got != tt.want {
+				t.Errorf("AutoConvert(%q) = %q, want %q", tt.input, got, tt.want)
+			}
+		})
+	}
+}

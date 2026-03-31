@@ -425,6 +425,50 @@ func TestTimeDateMillisAutoDetect(t *testing.T) {
 	}
 }
 
+func TestTimeAutoTimestamp(t *testing.T) {
+	stdout, _, err := runHenge(t, "", "time", "1735689600")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "2025-01-01T00:00:00Z" {
+		t.Errorf("time auto (timestamp): got %q, want %q", got, "2025-01-01T00:00:00Z")
+	}
+}
+
+func TestTimeAutoDate(t *testing.T) {
+	stdout, _, err := runHenge(t, "", "time", "2025-01-01T00:00:00Z")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "1735689600" {
+		t.Errorf("time auto (date): got %q, want %q", got, "1735689600")
+	}
+}
+
+func TestTimeAutoFromStdin(t *testing.T) {
+	stdout, _, err := runHenge(t, "1735689600", "time")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "2025-01-01T00:00:00Z" {
+		t.Errorf("time auto from stdin: got %q, want %q", got, "2025-01-01T00:00:00Z")
+	}
+}
+
+func TestTimeAutoMillis(t *testing.T) {
+	stdout, _, err := runHenge(t, "", "time", "1735689600000")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "2025-01-01T00:00:00Z" {
+		t.Errorf("time auto (millis): got %q, want %q", got, "2025-01-01T00:00:00Z")
+	}
+}
+
 func TestTimeRoundTrip(t *testing.T) {
 	// Step 1: convert date string to unix timestamp
 	stdout1, _, err := runHenge(t, "", "time", "unix", "2025-01-01T00:00:00Z")
