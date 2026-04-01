@@ -20,6 +20,7 @@ echo "hello" | henge hash sha256        # → 2cf24dba5fb0a30e...
 | SHA256 hash | `shasum -a 256` or `sha256sum`? | `henge hash sha256` |
 | JSON to YAML | Install `yq`, learn its syntax | `henge convert yaml` |
 | "What is this data?" | Try multiple tools manually | `echo "data" \| henge` |
+| "What time is this?" | `date -d @1735689600`? OS-dependent | `echo "1735689600" \| henge` |
 | Image to Base64 | `base64 < image.png` + manual Data URI | `henge encode image logo.png --data-uri` |
 | UNIX timestamp | `date -d @1735689600` or `date -r`? OS-dependent | `henge time date 1735689600` |
 
@@ -48,6 +49,7 @@ go build -o henge .
 Just pipe data into `henge` with no arguments. It detects the format and applies the most useful transformation:
 
 ```bash
+echo "1735689600" | henge           # UNIX timestamp → 2025-01-01T00:00:00Z
 echo "aGVsbG8=" | henge              # Base64 → hello
 echo '{"a":1}' | henge              # JSON → pretty-printed
 echo "hello%20world" | henge        # URL-encoded → hello world
@@ -55,7 +57,7 @@ echo "68656c6c6f" | henge           # Hex → hello
 echo "name: henge" | henge          # YAML → JSON
 ```
 
-Detection priority: JSON → Base64 → YAML → URL encoding → Hex
+Detection priority: UNIX timestamp → JSON → Base64 → YAML → URL encoding → Hex
 
 ### Encode / Decode
 

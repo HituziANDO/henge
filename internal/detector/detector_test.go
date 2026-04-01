@@ -23,7 +23,19 @@ func TestAutoDetectAndTransform(t *testing.T) {
 			wantErr: true,
 		},
 
-		// 1. JSON → pretty print
+		// 1. UNIX timestamp → date string
+		{
+			name:  "UNIX timestamp seconds 10 digits",
+			input: "1735689600",
+			want:  "2025-01-01T00:00:00Z",
+		},
+		{
+			name:  "UNIX timestamp milliseconds 13 digits",
+			input: "1735689600000",
+			want:  "2025-01-01T00:00:00Z",
+		},
+
+		// 2. JSON → pretty print
 		{
 			name:  "JSON object compact to pretty",
 			input: `{"name":"henge","version":"0.1.0"}`,
@@ -99,6 +111,35 @@ func TestAutoDetectAndTransform(t *testing.T) {
 			}
 			if !tt.wantErr && got != tt.want {
 				t.Errorf("AutoDetectAndTransform(%q) =\n%s\nwant:\n%s", tt.input, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestIsTimestamp(t *testing.T) {
+	tests := []struct {
+		input string
+		want  bool
+	}{
+		{"1735689600", true},     // 10-digit seconds
+		{"1735689600000", true},  // 13-digit milliseconds
+		{"1000000000", true},     // min 10-digit
+		{"9999999999", true},     // max 10-digit
+		{"1000000000000", true},  // min 13-digit
+		{"9999999999999", true},  // max 13-digit
+		{"999999999", false},     // 9 digits - too short
+		{"12345678901", false},   // 11 digits - ambiguous
+		{"123456789012", false},  // 12 digits - ambiguous
+		{"12345678901234", false}, // 14 digits - too long
+		{"-1735689600", false},   // negative
+		{"hello", false},         // not numeric
+		{"", false},              // empty
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			if got := isTimestamp(tt.input); got != tt.want {
+				t.Errorf("isTimestamp(%q) = %v, want %v", tt.input, got, tt.want)
 			}
 		})
 	}

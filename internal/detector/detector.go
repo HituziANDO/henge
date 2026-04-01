@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/HituziANDO/henge/internal/decoder"
+	"github.com/HituziANDO/henge/internal/timconv"
 	"gopkg.in/yaml.v3"
 )
 
@@ -19,12 +21,20 @@ func AutoDetectAndTransform(input string) (string, error) {
 		return "", fmt.Errorf("empty input")
 	}
 
-	// 1. JSON → pretty print
+	// 1. UNIX timestamp → date string (before JSON, since bare numbers are valid JSON)
+	if isTimestamp(input) {
+		result, err := timconv.AutoConvert(input)
+		if err == nil {
+			return result, nil
+		}
+	}
+
+	// 2. JSON → pretty print
 	if isJSON(input) {
 		return formatJSON(input)
 	}
 
-	// 2. Base64 → decode
+	// 3. Base64 → decode
 	if isBase64(input) {
 		decoded, err := decoder.Base64Decode(input)
 		if err == nil && isPrintable([]byte(decoded)) {
@@ -32,12 +42,12 @@ func AutoDetectAndTransform(input string) (string, error) {
 		}
 	}
 
-	// 3. YAML → JSON
+	// 4. YAML → JSON
 	if isYAML(input) {
 		return yamlToJSON(input)
 	}
 
-	// 4. URL encoded → decode
+	// 5. URL encoded → decode
 	if isURLEncoded(input) {
 		decoded, err := decoder.URLDecode(input)
 		if err == nil {
@@ -45,7 +55,7 @@ func AutoDetectAndTransform(input string) (string, error) {
 		}
 	}
 
-	// 5. Hex → decode
+	// 6. Hex → decode
 	if isHex(input) {
 		decoded, err := decoder.HexDecode(input)
 		if err == nil && isPrintable([]byte(decoded)) {
@@ -54,6 +64,21 @@ func AutoDetectAndTransform(input string) (string, error) {
 	}
 
 	return "", fmt.Errorf("could not auto-detect input format")
+}
+
+// isTimestamp reports whether input looks like a UNIX timestamp.
+// Only matches 10-digit (seconds, ~2001-2286) or 13-digit (milliseconds, ~2001-2286)
+// numeric strings to avoid false positives with other formats.
+func isTimestamp(s string) bool {
+	if !timconv.IsTimestamp(s) {
+		return false
+	}
+	v, err := strconv.ParseInt(strings.TrimSpace(s), 10, 64)
+	if err != nil || v < 0 {
+		return false
+	}
+	digits := len(strings.TrimSpace(s))
+	return digits == 10 || digits == 13
 }
 
 func isJSON(s string) bool {
