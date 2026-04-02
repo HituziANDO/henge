@@ -10,13 +10,14 @@ import (
 var (
 	version    = "1.2.0"
 	outputFile string
+	inputFile  string
 	fromFormat string
 	compact    bool
 	noNewline  bool
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "henge [file]",
+	Use:   "henge [input]",
 	Short: "henge - universal data transformation tool",
 	Long: `henge (変化) - A universal CLI data transformation tool, inspired by CyberChef.
 
@@ -31,6 +32,7 @@ A universal CLI tool for data transformation:
 Usage:
   echo "aGVsbG8=" | henge              # Auto-detect and transform
   echo "hello" | henge encode base64   # Explicit encoding
+  henge format json --file data.json   # Read from file
   cat file.json | henge format json    # Format JSON`,
 	Version: version,
 	RunE:    runAuto,
@@ -44,6 +46,7 @@ func Execute() {
 
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&outputFile, "output", "o", "", "output file (default: stdout)")
+	rootCmd.PersistentFlags().StringVar(&inputFile, "file", "", "read input from file")
 	rootCmd.PersistentFlags().StringVarP(&fromFormat, "from", "f", "", "input format (override auto-detection)")
 	rootCmd.PersistentFlags().BoolVarP(&compact, "compact", "c", false, "compact output (no indentation)")
 	rootCmd.PersistentFlags().BoolVarP(&noNewline, "no-newline", "n", false, "do not append newline to output")

@@ -126,7 +126,16 @@ func isYAML(s string) bool {
 	}
 	var obj interface{}
 	err := yaml.Unmarshal([]byte(s), &obj)
-	return err == nil && obj != nil
+	if err != nil || obj == nil {
+		return false
+	}
+	// Only consider structured data (map or slice) as YAML, not scalar values
+	switch obj.(type) {
+	case map[string]interface{}, []interface{}:
+		return true
+	default:
+		return false
+	}
 }
 
 func yamlToJSON(s string) (string, error) {

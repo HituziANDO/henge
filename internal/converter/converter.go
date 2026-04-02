@@ -55,11 +55,14 @@ func DetectFormat(input string) string {
 		}
 	}
 
-	// Try YAML
+	// Try YAML (only structured data: map or slice, not scalar values)
 	var yamlVal interface{}
 	if err := yaml.Unmarshal([]byte(trimmed), &yamlVal); err == nil && yamlVal != nil {
 		if strings.Contains(trimmed, ":") {
-			return "yaml"
+			switch yamlVal.(type) {
+			case map[string]interface{}, []interface{}:
+				return "yaml"
+			}
 		}
 	}
 

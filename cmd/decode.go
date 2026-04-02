@@ -33,7 +33,7 @@ var decodeBase64Cmd = &cobra.Command{
 	Use:   "base64 [input]",
 	Short: "Decode base64 input",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		input, err := hengeio.ReadInput(args)
+		input, err := hengeio.ReadInput(args, inputFile)
 		if err != nil {
 			return err
 		}
@@ -50,7 +50,7 @@ var decodeURLCmd = &cobra.Command{
 	Use:   "url [input]",
 	Short: "Decode URL percent-encoded input",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		input, err := hengeio.ReadInput(args)
+		input, err := hengeio.ReadInput(args, inputFile)
 		if err != nil {
 			return err
 		}
@@ -67,7 +67,7 @@ var decodeHexCmd = &cobra.Command{
 	Use:   "hex [input]",
 	Short: "Decode hexadecimal input",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		input, err := hengeio.ReadInput(args)
+		input, err := hengeio.ReadInput(args, inputFile)
 		if err != nil {
 			return err
 		}
@@ -84,7 +84,7 @@ var decodeImageCmd = &cobra.Command{
 	Use:   "image [input]",
 	Short: "Decode base64 to image file",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		input, err := hengeio.ReadInput(args)
+		input, err := hengeio.ReadInput(args, inputFile)
 		if err != nil {
 			return err
 		}

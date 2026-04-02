@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/HituziANDO/henge/internal/encoder"
 	hengeimg "github.com/HituziANDO/henge/internal/image"
@@ -32,11 +31,10 @@ var encodeBase64Cmd = &cobra.Command{
 	Use:   "base64 [input]",
 	Short: "Encode input to base64",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		input, err := hengeio.ReadInput(args)
+		input, err := hengeio.ReadInput(args, inputFile)
 		if err != nil {
 			return err
 		}
-		input = strings.TrimSpace(input)
 		result, err := encoder.Base64Encode(input)
 		if err != nil {
 			return fmt.Errorf("base64 encode failed: %w", err)
@@ -49,11 +47,10 @@ var encodeURLCmd = &cobra.Command{
 	Use:   "url [input]",
 	Short: "Encode input with URL percent-encoding",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		input, err := hengeio.ReadInput(args)
+		input, err := hengeio.ReadInput(args, inputFile)
 		if err != nil {
 			return err
 		}
-		input = strings.TrimSpace(input)
 		result, err := encoder.URLEncode(input)
 		if err != nil {
 			return fmt.Errorf("url encode failed: %w", err)
@@ -66,11 +63,10 @@ var encodeHexCmd = &cobra.Command{
 	Use:   "hex [input]",
 	Short: "Encode input to hexadecimal",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		input, err := hengeio.ReadInput(args)
+		input, err := hengeio.ReadInput(args, inputFile)
 		if err != nil {
 			return err
 		}
-		input = strings.TrimSpace(input)
 		result, err := encoder.HexEncode(input)
 		if err != nil {
 			return fmt.Errorf("hex encode failed: %w", err)

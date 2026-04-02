@@ -28,7 +28,7 @@ Examples:
   henge time unix "2025-01-01T00:00:00Z"
   henge time date --timezone Asia/Tokyo 1735689600`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		input, err := hengeio.ReadInput(args)
+		input, err := hengeio.ReadInput(args, inputFile)
 		if err != nil {
 			return err
 		}
@@ -47,7 +47,7 @@ var timeUnixCmd = &cobra.Command{
 	Use:   "unix [input]",
 	Short: "Convert date string to UNIX timestamp",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		input, err := hengeio.ReadInput(args)
+		input, err := hengeio.ReadInput(args, inputFile)
 		if err != nil {
 			return err
 		}
@@ -73,7 +73,7 @@ var timeDateCmd = &cobra.Command{
 	Use:   "date [input]",
 	Short: "Convert UNIX timestamp to date string",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		input, err := hengeio.ReadInput(args)
+		input, err := hengeio.ReadInput(args, inputFile)
 		if err != nil {
 			return err
 		}

@@ -45,13 +45,13 @@ func init() {
 
 func runHash(hashFn func(string) string) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
-		input, err := hengeio.ReadInput(args)
+		input, err := hengeio.ReadInput(args, inputFile)
 		if err != nil {
 			return err
 		}
 
-		// Remove trailing newline from stdin/pipe input
-		input = strings.TrimRight(input, "\n")
+		// Remove trailing newline (including CRLF) from stdin/pipe input
+		input = strings.TrimRight(input, "\r\n")
 
 		result := hashFn(input)
 		return writeOutput(result)

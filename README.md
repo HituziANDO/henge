@@ -198,9 +198,9 @@ cat data.txt | henge convert json --from yaml
 ### File input
 
 ```bash
-# As argument
-henge format json data.json
-henge hash sha256 file.txt
+# With --file flag
+henge format json --file data.json
+henge hash sha256 --file file.txt
 
 # Via redirect
 henge convert yaml < config.json
@@ -214,6 +214,7 @@ cat data.json | henge format json
 | Flag | Short | Description |
 |------|-------|-------------|
 | `--output <file>` | `-o` | Write output to file instead of stdout |
+| `--file <file>` | | Read input from file |
 | `--from <format>` | `-f` | Specify input format (override auto-detection) |
 | `--compact` | `-c` | Compact output (no indentation) |
 | `--no-newline` | `-n` | Do not append trailing newline |
@@ -254,7 +255,7 @@ echo "hello" | henge encode base64 | henge decode base64
 ## Command Reference
 
 ```
-henge [file]                          Auto-detect and transform
+henge [input]                         Auto-detect and transform
 henge auto [input]                    Auto-detect (explicit alias)
 
 henge encode base64 [input]           Base64 encode

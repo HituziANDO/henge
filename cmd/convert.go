@@ -32,7 +32,7 @@ func init() {
 func runConvert(cmd *cobra.Command, args []string) error {
 	target := args[0]
 
-	input, err := hengeio.ReadInput(args[1:])
+	input, err := hengeio.ReadInput(args[1:], inputFile)
 	if err != nil {
 		return err
 	}

@@ -18,7 +18,7 @@ func init() {
 }
 
 func runAuto(cmd *cobra.Command, args []string) error {
-	input, err := hengeio.ReadInput(args)
+	input, err := hengeio.ReadInput(args, inputFile)
 	if err != nil {
 		return err
 	}

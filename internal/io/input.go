@@ -7,15 +7,18 @@ import (
 	"strings"
 )
 
-// ReadInput reads data from args (file path), stdin, or returns an error.
-func ReadInput(args []string) (string, error) {
-	if len(args) > 0 {
-		// Try to read as file first
-		data, err := os.ReadFile(args[0])
-		if err == nil {
-			return string(data), nil
+// ReadInput reads data from a file (if filePath is set), args (literal), or stdin.
+func ReadInput(args []string, filePath string) (string, error) {
+	if filePath != "" {
+		data, err := os.ReadFile(filePath)
+		if err != nil {
+			return "", fmt.Errorf("reading file: %w", err)
 		}
-		// If not a file, treat as literal input
+		return string(data), nil
+	}
+
+	if len(args) > 0 {
+		// Treat arguments as literal input
 		return strings.Join(args, " "), nil
 	}
 
