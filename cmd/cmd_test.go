@@ -208,7 +208,7 @@ func writeTempPNG(t *testing.T) string {
 func TestEncodeImage(t *testing.T) {
 	pngFile := writeTempPNG(t)
 
-	stdout, _, err := runHenge(t, "", "encode", "image", pngFile)
+	stdout, _, err := runHenge(t, "", "encode", "image", "--file", pngFile)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -223,7 +223,7 @@ func TestEncodeImage(t *testing.T) {
 func TestEncodeImageDataURI(t *testing.T) {
 	pngFile := writeTempPNG(t)
 
-	stdout, _, err := runHenge(t, "", "encode", "image", pngFile, "--data-uri")
+	stdout, _, err := runHenge(t, "", "encode", "image", "--file", pngFile, "--data-uri")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -238,7 +238,7 @@ func TestEncodeImageDataURI(t *testing.T) {
 func TestEncodeImageWrap(t *testing.T) {
 	pngFile := writeTempPNG(t)
 
-	stdout, _, err := runHenge(t, "", "encode", "image", pngFile, "--wrap", "20")
+	stdout, _, err := runHenge(t, "", "encode", "image", "--file", pngFile, "--wrap", "20")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -300,7 +300,7 @@ func TestEncodeDecodeRoundTrip(t *testing.T) {
 	pngFile := writeTempPNG(t)
 
 	// Step 1: encode image to base64
-	stdout, _, err := runHenge(t, "", "encode", "image", pngFile)
+	stdout, _, err := runHenge(t, "", "encode", "image", "--file", pngFile)
 	if err != nil {
 		t.Fatalf("encode step failed: %v", err)
 	}

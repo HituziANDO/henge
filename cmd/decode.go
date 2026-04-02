@@ -26,7 +26,7 @@ Examples:
   echo "aGVsbG8=" | henge decode base64
   echo "hello%20world" | henge decode url
   echo "68656c6c6f" | henge decode hex
-  henge decode image encoded.txt -o restored.png`,
+  henge decode image --file encoded.txt -o restored.png`,
 }
 
 var decodeBase64Cmd = &cobra.Command{

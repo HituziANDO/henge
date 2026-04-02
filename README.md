@@ -83,25 +83,25 @@ Encode image files to Base64 strings and decode them back. Useful for embedding 
 
 ```bash
 # Image → Base64
-henge encode image logo.png               # → iVBORw0KGgo...
+henge encode image --file logo.png               # → iVBORw0KGgo...
 
 # Image → Data URI (for HTML/CSS embedding)
-henge encode image logo.png --data-uri    # → data:image/png;base64,iVBORw0KGgo...
+henge encode image --file logo.png --data-uri    # → data:image/png;base64,iVBORw0KGgo...
 
 # Wrap output at 76 characters (for email)
-henge encode image photo.jpg --wrap 76
+henge encode image --file photo.jpg --wrap 76
 
 # Save Base64 to file
-henge encode image logo.png -o encoded.txt
+henge encode image --file logo.png -o encoded.txt
 
 # Base64 → Image
-henge decode image encoded.txt -o restored.png
+henge decode image --file encoded.txt -o restored.png
 
 # Data URI → Image (auto-detected)
 echo "data:image/png;base64,iVBORw..." | henge decode image -o output.png
 
 # Round-trip: encode then decode
-henge encode image logo.png | henge decode image -o copy.png
+henge encode image --file logo.png | henge decode image -o copy.png
 ```
 
 Supported formats: PNG, JPEG, GIF, WebP, BMP, SVG, ICO
@@ -261,12 +261,12 @@ henge auto [input]                    Auto-detect (explicit alias)
 henge encode base64 [input]           Base64 encode
 henge encode url [input]              URL percent-encode
 henge encode hex [input]              Hex encode
-henge encode image <file>             Image to Base64 (--data-uri, --wrap)
+henge encode image --file <file>      Image to Base64 (--data-uri, --wrap)
 
 henge decode base64 [input]           Base64 decode
 henge decode url [input]              URL percent-decode
 henge decode hex [input]              Hex decode
-henge decode image [input] -o <file>  Base64 to image file
+henge decode image [input] -o <file>  Base64 to image file (--file for file input)
 
 henge hash md5 [input]                MD5 hash
 henge hash sha1 [input]               SHA-1 hash

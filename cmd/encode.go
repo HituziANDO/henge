@@ -24,7 +24,7 @@ Examples:
   echo "hello" | henge encode base64
   echo "hello world" | henge encode url
   echo "hello" | henge encode hex
-  henge encode image logo.png --data-uri`,
+  henge encode image --file logo.png --data-uri`,
 }
 
 var encodeBase64Cmd = &cobra.Command{
@@ -76,20 +76,21 @@ var encodeHexCmd = &cobra.Command{
 }
 
 var encodeImageCmd = &cobra.Command{
-	Use:   "image <file>",
+	Use:   "image",
 	Short: "Encode image file to base64",
-	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		filePath := args[0]
+		if inputFile == "" {
+			return fmt.Errorf("--file flag is required for image encoding (e.g. henge encode image --file logo.png)")
+		}
 		dataURI, _ := cmd.Flags().GetBool("data-uri")
 		wrapWidth, _ := cmd.Flags().GetInt("wrap")
 
 		var result string
 		var err error
 		if dataURI {
-			result, err = hengeimg.EncodeFileToDataURI(filePath)
+			result, err = hengeimg.EncodeFileToDataURI(inputFile)
 		} else {
-			result, err = hengeimg.EncodeFileToBase64(filePath)
+			result, err = hengeimg.EncodeFileToBase64(inputFile)
 		}
 		if err != nil {
 			return fmt.Errorf("image encode failed: %w", err)
