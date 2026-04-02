@@ -1,4 +1,6 @@
-# henge (変化)
+# henge
+
+![henge: universal CLI data transformation tool](readme-image/henge-image.png)
 
 A universal CLI data transformation tool, inspired by [CyberChef](https://gchq.github.io/CyberChef/).
 
