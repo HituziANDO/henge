@@ -44,6 +44,14 @@ cd henge
 go build -o henge .
 ```
 
+### Pre-built binaries (goreleaser)
+
+```sh
+goreleaser build --snapshot --clean
+```
+
+Pre-built binaries for Linux, macOS, and Windows (amd64/arm64) are available from the [Releases](https://github.com/HituziANDO/henge/releases) page.
+
 ## Usage
 
 ### Auto-detect (default)
