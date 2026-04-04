@@ -1,5 +1,7 @@
 # henge
 
+[日本語版 README はこちら](./docs/README_ja.md)
+
 ![henge: universal CLI data transformation tool](readme-image/henge-image.png)
 
 A universal CLI data transformation tool, inspired by [CyberChef](https://gchq.github.io/CyberChef/).
@@ -23,7 +25,7 @@ echo "hello" | henge hash sha256        # → 2cf24dba5fb0a30e...
 | JSON to YAML | Install `yq`, learn its syntax | `henge convert yaml` |
 | "What is this data?" | Try multiple tools manually | `echo "data" \| henge` |
 | "What time is this?" | `date -d @1735689600`? OS-dependent | `echo "1735689600" \| henge` |
-| Image to Base64 | `base64 < image.png` + manual Data URI | `henge encode image logo.png --data-uri` |
+| Image to Base64 | `base64 < image.png` + manual Data URI | `henge encode image --file logo.png --data-uri` |
 | UNIX timestamp | `date -d @1735689600` or `date -r`? OS-dependent | `henge time date 1735689600` |
 
 One tool. One syntax. Works with pipes.
@@ -335,16 +337,6 @@ Binaries are output to `dist/`.
 git tag v{X.Y.Z}
 git push origin v{X.Y.Z}
 ```
-
-## Tech Stack
-
-| Component | Choice | Reason |
-|-----------|--------|--------|
-| Language | Go | Single binary, cross-platform, fast startup |
-| CLI Framework | [Cobra](https://github.com/spf13/cobra) | Used by kubectl, docker, gh |
-| YAML | [gopkg.in/yaml.v3](https://pkg.go.dev/gopkg.in/yaml.v3) | Standard Go YAML library |
-| TOML | [BurntSushi/toml](https://github.com/BurntSushi/toml) | De facto Go TOML library |
-| CSV, JSON, Hash | Go standard library | No external dependencies needed |
 
 ## License
 
