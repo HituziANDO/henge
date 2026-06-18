@@ -205,6 +205,34 @@ echo -e "name,age\nAlice,30\nBob,25" | henge convert json
 cat data.txt | henge convert json --from yaml
 ```
 
+### ケース変換
+
+英字の大文字/小文字、または識別子のケースを変換します。`upper`/`lower` は英字のみを
+変換し、区切り文字・空白・構造はそのまま保持します。`snake`/`camel`/`kebab`/`pascal`
+は入力をトークナイズ（単語分割）して目的のケースで再構成するため、入力元のケースは
+自動的に判別されます。識別子変換は各行を1つの識別子として処理します。
+
+```bash
+# 英字の大文字/小文字（区切り文字は保持）
+echo "foo_bar Baz" | henge case upper     # → FOO_BAR BAZ
+echo "Foo-BAR"     | henge case lower     # → foo-bar
+
+# 識別子のケース（入力元は自動判別）
+echo "fooBar"  | henge case snake         # → foo_bar
+echo "foo_bar" | henge case camel         # → fooBar
+echo "fooBar"  | henge case kebab         # → foo-bar
+echo "foo_bar" | henge case pascal        # → FooBar
+
+# 略語は入力側で分割され、空白は単語境界になる
+echo "HTTPServer"      | henge case snake # → http_server
+echo "User First Name" | henge case snake # → user_first_name
+
+# 各行が独立して変換される
+printf "fooBar\nbazQux\n" | henge case snake
+# foo_bar
+# baz_qux
+```
+
 ### ファイル入力
 
 ```bash
@@ -290,6 +318,13 @@ henge format xml [input]              XML 整形表示
 henge convert json [input]            JSON に変換
 henge convert yaml [input]            YAML に変換
 henge convert toml [input]            TOML に変換
+
+henge case upper [input]              すべて大文字に変換
+henge case lower [input]              すべて小文字に変換
+henge case snake [input]              snake_case に変換
+henge case camel [input]              camelCase に変換
+henge case kebab [input]              kebab-case に変換
+henge case pascal [input]             PascalCase に変換
 
 henge time [input]                    自動検出してタイムスタンプ/日時を変換
 henge time unix [input]               日時文字列を UNIX タイムスタンプに変換

@@ -205,6 +205,34 @@ echo -e "name,age\nAlice,30\nBob,25" | henge convert json
 cat data.txt | henge convert json --from yaml
 ```
 
+### Case conversion
+
+Convert letter case or identifier case. `upper`/`lower` change letters only
+(delimiters, whitespace, and structure preserved). `snake`/`camel`/`kebab`/`pascal`
+tokenize the input and re-emit it in the target case, so the source case is
+detected automatically. Identifier conversions process each line as one identifier.
+
+```bash
+# Letter case (delimiters preserved)
+echo "foo_bar Baz" | henge case upper     # → FOO_BAR BAZ
+echo "Foo-BAR"     | henge case lower     # → foo-bar
+
+# Identifier case (source auto-detected)
+echo "fooBar"  | henge case snake         # → foo_bar
+echo "foo_bar" | henge case camel         # → fooBar
+echo "fooBar"  | henge case kebab         # → foo-bar
+echo "foo_bar" | henge case pascal        # → FooBar
+
+# Acronyms are split on input; whitespace becomes a word boundary
+echo "HTTPServer"      | henge case snake # → http_server
+echo "User First Name" | henge case snake # → user_first_name
+
+# Each line is converted independently
+printf "fooBar\nbazQux\n" | henge case snake
+# foo_bar
+# baz_qux
+```
+
 ### File input
 
 ```bash
@@ -290,6 +318,13 @@ henge format xml [input]              Pretty-print XML
 henge convert json [input]            Convert to JSON
 henge convert yaml [input]            Convert to YAML
 henge convert toml [input]            Convert to TOML
+
+henge case upper [input]              Uppercase every letter
+henge case lower [input]              Lowercase every letter
+henge case snake [input]              Convert to snake_case
+henge case camel [input]              Convert to camelCase
+henge case kebab [input]              Convert to kebab-case
+henge case pascal [input]             Convert to PascalCase
 
 henge time [input]                    Auto-detect and convert timestamp/date
 henge time unix [input]               Date string to UNIX timestamp

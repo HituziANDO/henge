@@ -148,6 +148,112 @@ func TestHashSHA512(t *testing.T) {
 	}
 }
 
+// --- Case conversion tests ---
+
+func TestCaseUpper(t *testing.T) {
+	stdout, _, err := runHenge(t, "foo_bar Baz", "case", "upper")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "FOO_BAR BAZ" {
+		t.Errorf("case upper: got %q, want %q", got, "FOO_BAR BAZ")
+	}
+}
+
+func TestCaseLower(t *testing.T) {
+	stdout, _, err := runHenge(t, "Foo-BAR", "case", "lower")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "foo-bar" {
+		t.Errorf("case lower: got %q, want %q", got, "foo-bar")
+	}
+}
+
+func TestCaseSnake(t *testing.T) {
+	stdout, _, err := runHenge(t, "fooBar", "case", "snake")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "foo_bar" {
+		t.Errorf("case snake: got %q, want %q", got, "foo_bar")
+	}
+}
+
+func TestCaseCamel(t *testing.T) {
+	stdout, _, err := runHenge(t, "", "case", "camel", "foo_bar")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "fooBar" {
+		t.Errorf("case camel: got %q, want %q", got, "fooBar")
+	}
+}
+
+func TestCaseKebab(t *testing.T) {
+	stdout, _, err := runHenge(t, "fooBar", "case", "kebab")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "foo-bar" {
+		t.Errorf("case kebab: got %q, want %q", got, "foo-bar")
+	}
+}
+
+func TestCasePascal(t *testing.T) {
+	stdout, _, err := runHenge(t, "foo_bar", "case", "pascal")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "FooBar" {
+		t.Errorf("case pascal: got %q, want %q", got, "FooBar")
+	}
+}
+
+func TestCaseSnakeAcronym(t *testing.T) {
+	stdout, _, err := runHenge(t, "HTTPServer", "case", "snake")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "http_server" {
+		t.Errorf("case snake (acronym): got %q, want %q", got, "http_server")
+	}
+}
+
+func TestCaseSnakeMultiline(t *testing.T) {
+	stdout, _, err := runHenge(t, "fooBar\nbazQux", "case", "snake")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := strings.TrimSpace(stdout)
+	if got != "foo_bar\nbaz_qux" {
+		t.Errorf("case snake (multiline): got %q, want %q", got, "foo_bar\nbaz_qux")
+	}
+}
+
+func TestCaseSnakeCamelRoundTrip(t *testing.T) {
+	// snake -> camel -> snake should return the original identifier
+	camelOut, _, err := runHenge(t, "user_first_name", "case", "camel")
+	if err != nil {
+		t.Fatalf("camel step failed: %v", err)
+	}
+	snakeOut, _, err := runHenge(t, camelOut, "case", "snake")
+	if err != nil {
+		t.Fatalf("snake step failed: %v", err)
+	}
+	got := strings.TrimSpace(snakeOut)
+	if got != "user_first_name" {
+		t.Errorf("round-trip snake/camel: got %q, want %q", got, "user_first_name")
+	}
+}
+
 // --- Pipe round-trip tests ---
 
 func TestPipeEncodeDecodePoundTrip(t *testing.T) {
