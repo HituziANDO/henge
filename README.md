@@ -2,8 +2,6 @@
 
 [日本語版 README はこちら](./docs/README_ja.md)
 
-![henge: universal CLI data transformation tool](readme-image/henge-image.png)
-
 A universal CLI data transformation tool, inspired by [CyberChef](https://gchq.github.io/CyberChef/).
 
 Encode, decode, hash, format, convert, and transform timestamps without leaving the terminal. No more googling `base64` flags or `shasum` syntax.

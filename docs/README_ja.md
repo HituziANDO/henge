@@ -2,8 +2,6 @@
 
 [English README](../README.md)
 
-![henge: universal CLI data transformation tool](../readme-image/henge-image.png)
-
 [CyberChef](https://gchq.github.io/CyberChef/) にインスパイアされた、汎用 CLI データ変換ツールです。
 
 エンコード、デコード、ハッシュ、フォーマット、変換、タイムスタンプ変換をターミナルから離れることなく実行できます。`base64` のフラグや `shasum` の構文をもう検索する必要はありません。
